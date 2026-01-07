@@ -15,4 +15,5 @@ web-build/
 .env
 .env.local
 server/.env
+server/service-account.json
 server/node_modules/

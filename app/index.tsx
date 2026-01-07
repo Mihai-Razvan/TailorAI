@@ -18,9 +18,7 @@ import PhotoUpload from '@/components/PhotoUpload';
 import ResultDisplay from '@/components/ResultDisplay';
 import { ClothingStyle } from '@/app/types';
 
-const API_BASE_URL = __DEV__ 
-  ? (Platform.OS === 'android' ? 'http://10.0.2.2:3001' : 'http://localhost:3001')
-  : 'https://your-production-api.com';
+const API_BASE_URL = 'https://74d6140a99ff.ngrok-free.app';
 
 export default function HomeScreen() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -71,36 +69,50 @@ export default function HomeScreen() {
       
       try {
         setLoadingMessage('Generating your look...');
-        
-        const apiResponse = await fetch(`${API_BASE_URL}/api/generate-outfit`, {
+      
+        const url = `${API_BASE_URL}/api/generate-outfit`;
+      
+        console.log('➡️ REQUEST URL:', url);
+        console.log('➡️ IMAGE SIZE (base64 chars):', base64Image.length);
+        console.log('➡️ STYLE:', selectedStyle);
+      
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify({
             image: base64Image,
             style: selectedStyle,
           }),
         });
-
-        if (!apiResponse.ok) {
-          const errorData = await apiResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || `API error: ${apiResponse.status}`);
+      
+        console.log('⬅️ RESPONSE STATUS:', response.status);
+      
+        const text = await response.text();
+        console.log('⬅️ RAW RESPONSE:', text);
+      
+        const data = JSON.parse(text);
+      
+        if (!response.ok) {
+          throw new Error(data.error || `API error ${response.status}`);
         }
-
-        const data = await apiResponse.json();
-        
+      
         if (data.success && data.generatedImage) {
           setGeneratedImage(data.generatedImage);
-          setLoadingMessage('');
         } else {
-          throw new Error(data.error || 'Failed to generate outfit');
+          throw new Error(data.error || 'Invalid API response');
         }
-      } catch (error) {
-        console.error('Generation error:', error);
+      
+      } catch (error: any) {
+        console.error('❌ FULL ERROR OBJECT:', error);
+        console.error('❌ ERROR MESSAGE:', error?.message);
+        console.error('❌ ERROR STACK:', error?.stack);
+      
         Alert.alert(
           'Generation Failed',
-          error instanceof Error ? error.message : 'Failed to generate outfit. Please try again.'
+          error?.message ?? JSON.stringify(error)
         );
       } finally {
         setLoading(false);
