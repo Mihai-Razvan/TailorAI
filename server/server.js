@@ -32,19 +32,36 @@ const stylePrompts = {
 function generatePrompt(style) {
   const styleInfo = stylePrompts[style] || stylePrompts.casual;
   
-  return `Keep the person's face, pose, body structure, lighting, and background exactly the same as in the original image. Only replace the clothing with a ${style} outfit. ${styleInfo.description}.
+  return `Edit ONLY the clothing in the provided image. The person must remain in the EXACT same position, pose, and location. Do NOT move, reposition, or change the person's position in any way.
 
-Requirements:
-- Preserve the exact face, facial features, and expression
-- Keep the same body pose and proportions
-- Maintain the same background and environment
-- Keep the same lighting conditions and shadows
-- Only modify the clothing to match the ${style} style
+CRITICAL REQUIREMENTS - DO NOT VIOLATE:
+- Keep the person in the EXACT same position and pose as in the original image
+- Do NOT add any body parts that are not visible in the original image (if legs are not visible, do NOT add legs)
+- Do NOT reposition the person to show hidden body parts
+- Preserve the EXACT same background - pixel by pixel identical except for clothing
+- Keep the person's face, facial features, and expression exactly as shown
+- Maintain the EXACT same body proportions and visible body parts
+- Keep the EXACT same camera angle and perspective
+- Preserve the EXACT same lighting conditions and shadows
+- Do NOT change the person's position, stance, or location in the frame
+- Do NOT rotate, move, or adjust the person in any way
+
+ONLY CHANGE:
+- Replace the clothing with a ${style} outfit. ${styleInfo.description}
 - Clothing should be photorealistic with natural folds, realistic fabric texture, and accurate colors
-- Ensure the clothing fits naturally on the body
-- No extra people, no face distortion, no background changes
-- Natural clothing shadows and realistic fabric behavior
-- High quality, professional photography look`;
+- Clothing should fit naturally on the visible body parts only
+
+FORBIDDEN:
+- Do NOT add missing body parts
+- Do NOT reposition the person
+- Do NOT change the background
+- Do NOT change the camera angle
+- Do NOT add or remove people
+- Do NOT change facial features
+- Do NOT change body proportions
+- Do NOT move the person to show hidden parts
+
+The result must be the exact same image with only the clothing changed. Everything else must remain identical.`;
 }
 
 // Health check endpoint
@@ -98,18 +115,22 @@ app.post('/api/generate-outfit', async (req, res) => {
       const modelName = process.env.NANO_BANANA_MODEL || 'gemini-3-pro-image-preview';
 
       // Generate image using Nano Banana
-      // The model supports image editing via prompt guidance
+      // Send image and text as separate parts for better image editing
       const response = await ai.models.generateContent({
         model: modelName,
         contents: [
           {
             parts: [
+              // Send image first as a separate part
               {
-                text: prompt,
-                inline_data: {
-                  mime_type: 'image/jpeg',
+                inlineData: {
+                  mimeType: 'image/jpeg',
                   data: base64ImageData
                 }
+              },
+              // Then send the text prompt as a separate part
+              {
+                text: `Based on the image provided above, ${prompt}`
               }
             ]
           }
