@@ -22,7 +22,7 @@ A React Native + Expo mobile app that uses AI to generate photorealistic outfit 
 
 ### Backend
 - Node.js + Express
-- Replicate API (or Nano Banana API)
+- Google Nano Banana API (Official Google API - Gemini models)
 - CORS enabled for mobile access
 
 ## Prerequisites
@@ -30,7 +30,7 @@ A React Native + Expo mobile app that uses AI to generate photorealistic outfit 
 - Node.js 18+ installed
 - npm or yarn package manager
 - Expo CLI (`npm install -g expo-cli`)
-- An API key from [Replicate](https://replicate.com) (recommended) or Nano Banana
+- An API key from [Google Nano Banana API](https://aistudio.google.com/app/apikey) (required)
 
 ## Installation & Setup
 
@@ -55,21 +55,25 @@ cd server
 
 2. Create a `.env` file:
 ```bash
-# Recommended: Replicate API
-REPLICATE_API_TOKEN=your_replicate_api_token_here
-AI_API_PROVIDER=replicate
+# Google Nano Banana API (Required)
+# Official Google API for image generation using Gemini models
+# Get your API key from: https://aistudio.google.com/app/apikey
+GOOGLE_NANO_BANANA_API_KEY=your_google_nano_banana_api_key_here
 
-# Alternative: Nano Banana API
-# NANO_BANANA_API_KEY=your_nano_banana_api_key_here
-# AI_API_PROVIDER=nanobanana
+# Nano Banana Model (Optional)
+# Options: 'gemini-2.5-flash-image' (faster) or 'gemini-3-pro-image-preview' (better quality)
+# Default: 'gemini-3-pro-image-preview'
+NANO_BANANA_MODEL=gemini-3-pro-image-preview
 
 # Server Port (optional, defaults to 3001)
 PORT=3001
 ```
 
+**Note:** Google Nano Banana API key is required. This is the official Google API for image generation.
+
 3. Get your API key:
-   - **Replicate** (Recommended): Sign up at https://replicate.com and get your API token from the account settings
-   - **Nano Banana**: Get your API key from Nano Banana documentation
+   - **Google Nano Banana API**: Get your API key from https://aistudio.google.com/app/apikey
+   - Documentation: https://ai.google.dev/gemini-api/docs/nanobanana
 
 4. Start the backend server:
 ```bash
@@ -203,10 +207,12 @@ npm run build:ios
 - Grant camera roll permissions when prompted
 - Check that the Expo Go app has necessary permissions in device settings
 
-### Replicate API errors
-- Verify your API token is valid
-- Check your Replicate account for rate limits
-- Ensure you have sufficient credits in your Replicate account
+### API errors
+- **Google Nano Banana API**: Verify your API key is valid at https://aistudio.google.com/app/apikey
+- Check your Google AI Studio account for rate limits
+- Ensure you have sufficient quota in your Google account
+- Verify the model name is correct (`gemini-2.5-flash-image` or `gemini-3-pro-image-preview`)
+- Check the API documentation: https://ai.google.dev/gemini-api/docs/nanobanana
 
 ## Customization
 

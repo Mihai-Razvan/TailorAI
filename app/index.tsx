@@ -18,7 +18,7 @@ import PhotoUpload from '@/components/PhotoUpload';
 import ResultDisplay from '@/components/ResultDisplay';
 import { ClothingStyle } from '@/app/types';
 
-const API_BASE_URL = 'https://74d6140a99ff.ngrok-free.app';
+const API_BASE_URL = 'https://14377f2ed4cc.ngrok-free.app';
 
 export default function HomeScreen() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
