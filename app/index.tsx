@@ -143,29 +143,101 @@ export default function HomeScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Choose Your Style</Text>
-          <View style={styles.styleGrid}>
-            <StyleCard
-              style="casual"
-              label="Casual"
-              emoji="👕"
-              selected={selectedStyle === 'casual'}
-              onPress={() => setSelectedStyle('casual')}
-            />
-            <StyleCard
-              style="modern"
-              label="Modern"
-              emoji="💼"
-              selected={selectedStyle === 'modern'}
-              onPress={() => setSelectedStyle('modern')}
-            />
-            <StyleCard
-              style="edgy"
-              label="Edgy"
-              emoji="🖤"
-              selected={selectedStyle === 'edgy'}
-              onPress={() => setSelectedStyle('edgy')}
-            />
-          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.styleScrollView}>
+            <View style={styles.styleGrid}>
+              <StyleCard
+                style="casual"
+                label="Casual"
+                emoji="👕"
+                selected={selectedStyle === 'casual'}
+                onPress={() => setSelectedStyle('casual')}
+              />
+              <StyleCard
+                style="modern"
+                label="Modern"
+                emoji="💼"
+                selected={selectedStyle === 'modern'}
+                onPress={() => setSelectedStyle('modern')}
+              />
+              <StyleCard
+                style="edgy"
+                label="Edgy"
+                emoji="🖤"
+                selected={selectedStyle === 'edgy'}
+                onPress={() => setSelectedStyle('edgy')}
+              />
+              <StyleCard
+                style="formal"
+                label="Formal"
+                emoji="🤵"
+                selected={selectedStyle === 'formal'}
+                onPress={() => setSelectedStyle('formal')}
+              />
+              <StyleCard
+                style="sporty"
+                label="Sporty"
+                emoji="⚽"
+                selected={selectedStyle === 'sporty'}
+                onPress={() => setSelectedStyle('sporty')}
+              />
+              <StyleCard
+                style="vintage"
+                label="Vintage"
+                emoji="📻"
+                selected={selectedStyle === 'vintage'}
+                onPress={() => setSelectedStyle('vintage')}
+              />
+              <StyleCard
+                style="bohemian"
+                label="Bohemian"
+                emoji="🌸"
+                selected={selectedStyle === 'bohemian'}
+                onPress={() => setSelectedStyle('bohemian')}
+              />
+              <StyleCard
+                style="cyberpunk"
+                label="Cyberpunk"
+                emoji="🤖"
+                selected={selectedStyle === 'cyberpunk'}
+                onPress={() => setSelectedStyle('cyberpunk')}
+              />
+              <StyleCard
+                style="steampunk"
+                label="Steampunk"
+                emoji="⚙️"
+                selected={selectedStyle === 'steampunk'}
+                onPress={() => setSelectedStyle('steampunk')}
+              />
+              <StyleCard
+                style="gothic"
+                label="Gothic"
+                emoji="🦇"
+                selected={selectedStyle === 'gothic'}
+                onPress={() => setSelectedStyle('gothic')}
+              />
+              <StyleCard
+                style="kawaii"
+                label="Kawaii"
+                emoji="🎀"
+                selected={selectedStyle === 'kawaii'}
+                onPress={() => setSelectedStyle('kawaii')}
+              />
+              <StyleCard
+                style="minimalist"
+                label="Minimalist"
+                emoji="⚪"
+                selected={selectedStyle === 'minimalist'}
+                onPress={() => setSelectedStyle('minimalist')}
+              />
+              <StyleCard
+                style="streetwear"
+                label="Streetwear"
+                emoji="👟"
+                selected={selectedStyle === 'streetwear'}
+                onPress={() => setSelectedStyle('streetwear')}
+              />
+            </View>
+          </ScrollView>
         </View>
 
         {loading && (
@@ -230,10 +302,14 @@ const styles = StyleSheet.create({
     color: '#111827',
     marginBottom: 16,
   },
+  styleScrollView: {
+    marginHorizontal: -20,
+    paddingHorizontal: 20,
+  },
   styleGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     gap: 12,
+    paddingRight: 20,
   },
   loadingContainer: {
     alignItems: 'center',

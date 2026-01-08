@@ -25,6 +25,46 @@ const stylePrompts = {
   edgy: {
     description: 'bold, alternative, street-style clothing with dark colors, leather, unique patterns, statement pieces',
     keywords: 'edgy style, alternative fashion, bold, street style, leather, dark colors, statement pieces, unique'
+  },
+  formal: {
+    description: 'elegant, professional, formal attire like suits, formal dresses, dress shirts, blazers, polished and sophisticated',
+    keywords: 'formal wear, elegant, professional, business attire, suit, formal dress, sophisticated, polished'
+  },
+  sporty: {
+    description: 'athletic, active wear like sports jerseys, athletic shorts, track pants, sneakers, performance fabrics',
+    keywords: 'sporty, athletic, activewear, sports jersey, athletic shorts, track pants, performance wear, gym wear'
+  },
+  vintage: {
+    description: 'retro, classic vintage clothing from past eras like 1950s dresses, vintage denim, retro patterns, classic silhouettes',
+    keywords: 'vintage, retro, classic, 1950s, 1960s, 1970s, retro patterns, classic silhouettes, timeless'
+  },
+  bohemian: {
+    description: 'free-spirited, artistic bohemian style with flowing fabrics, floral patterns, layered jewelry, earthy tones',
+    keywords: 'bohemian, boho, free-spirited, flowing fabrics, floral patterns, layered, earthy tones, artistic'
+  },
+  cyberpunk: {
+    description: 'futuristic, high-tech cyberpunk style with neon accents, tech-wear, metallic fabrics, futuristic silhouettes, neon colors',
+    keywords: 'cyberpunk, futuristic, high-tech, neon, tech-wear, metallic, futuristic silhouettes, sci-fi, neon colors'
+  },
+  steampunk: {
+    description: 'Victorian-era meets industrial steampunk style with corsets, waistcoats, gears, brass accents, vintage-meets-mechanical',
+    keywords: 'steampunk, Victorian, industrial, corsets, waistcoats, gears, brass, mechanical, vintage-meets-tech'
+  },
+  gothic: {
+    description: 'dark, dramatic gothic style with black clothing, lace, velvet, dramatic silhouettes, dark romantic aesthetic',
+    keywords: 'gothic, dark, dramatic, black clothing, lace, velvet, dramatic silhouettes, dark romantic, Victorian gothic'
+  },
+  kawaii: {
+    description: 'cute, playful Japanese kawaii style with pastel colors, cute patterns, oversized accessories, playful and adorable',
+    keywords: 'kawaii, cute, Japanese, pastel colors, cute patterns, oversized accessories, playful, adorable, anime-inspired'
+  },
+  minimalist: {
+    description: 'clean, simple minimalist style with neutral colors, simple lines, no patterns, understated elegance, essential pieces',
+    keywords: 'minimalist, clean, simple, neutral colors, simple lines, no patterns, understated, essential, Scandinavian'
+  },
+  streetwear: {
+    description: 'urban, trendy streetwear style with oversized hoodies, designer sneakers, graphic tees, hypebeast fashion, urban cool',
+    keywords: 'streetwear, urban, trendy, oversized hoodies, designer sneakers, graphic tees, hypebeast, urban cool, street style'
   }
 };
 
@@ -81,10 +121,11 @@ app.post('/api/generate-outfit', async (req, res) => {
       });
     }
 
-    if (!style || !['casual', 'modern', 'edgy'].includes(style)) {
+    const validStyles = ['casual', 'modern', 'edgy', 'formal', 'sporty', 'vintage', 'bohemian', 'cyberpunk', 'steampunk', 'gothic', 'kawaii', 'minimalist', 'streetwear'];
+    if (!style || !validStyles.includes(style)) {
       return res.status(400).json({ 
         success: false, 
-        error: 'Valid style is required (casual, modern, or edgy)' 
+        error: `Valid style is required. Options: ${validStyles.join(', ')}` 
       });
     }
 
