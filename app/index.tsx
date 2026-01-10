@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,11 +12,16 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StyleCard from '@/components/StyleCard';
 import PhotoUpload from '@/components/PhotoUpload';
 import ResultDisplay from '@/components/ResultDisplay';
+import HistoryView from '@/components/HistoryView';
+import { HistoryItem } from '@/components/HistoryItem';
 import { ClothingStyle } from '@/app/types';
+
+const HISTORY_STORAGE_KEY = '@tailorai_history';
 
 const API_BASE_URL = 'https://14377f2ed4cc.ngrok-free.app';
 
@@ -26,6 +31,66 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Load history on mount
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  const loadHistory = async () => {
+    try {
+      const storedHistory = await AsyncStorage.getItem(HISTORY_STORAGE_KEY);
+      if (storedHistory) {
+        setHistory(JSON.parse(storedHistory));
+      }
+    } catch (error) {
+      console.error('Error loading history:', error);
+    }
+  };
+
+  const saveToHistory = async (originalImage: string, generatedImage: string, style: string) => {
+    try {
+      const newItem: HistoryItem = {
+        id: Date.now().toString(),
+        originalImage,
+        generatedImage,
+        style,
+        timestamp: Date.now(),
+      };
+      const updatedHistory = [newItem, ...history];
+      setHistory(updatedHistory);
+      await AsyncStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
+    } catch (error) {
+      console.error('Error saving to history:', error);
+    }
+  };
+
+  const clearHistory = async () => {
+    Alert.alert(
+      'Clear History',
+      'Are you sure you want to clear all history?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: async () => {
+            setHistory([]);
+            await AsyncStorage.removeItem(HISTORY_STORAGE_KEY);
+          },
+        },
+      ]
+    );
+  };
+
+  const handleHistoryItemPress = (item: HistoryItem) => {
+    setSelectedImage(item.originalImage);
+    setGeneratedImage(item.generatedImage);
+    setSelectedStyle(item.style as ClothingStyle);
+    setShowHistory(false);
+  };
 
   const handleImagePick = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -101,6 +166,10 @@ export default function HomeScreen() {
       
         if (data.success && data.generatedImage) {
           setGeneratedImage(data.generatedImage);
+          // Save to history
+          if (selectedImage) {
+            await saveToHistory(selectedImage, data.generatedImage, selectedStyle || 'casual');
+          }
         } else {
           throw new Error(data.error || 'Invalid API response');
         }
@@ -125,6 +194,19 @@ export default function HomeScreen() {
     }
   };
 
+  if (showHistory) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <HistoryView
+          history={history}
+          onItemPress={handleHistoryItemPress}
+          onClose={() => setShowHistory(false)}
+          onClear={clearHistory}
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView 
@@ -132,7 +214,20 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>TailorAI</Text>
+          <View style={styles.headerTop}>
+            <Text style={styles.title}>TailorAI</Text>
+            <TouchableOpacity
+              style={styles.historyButton}
+              onPress={() => setShowHistory(true)}
+            >
+              <Text style={styles.historyButtonText}>📚</Text>
+              {history.length > 0 && (
+                <View style={styles.historyBadge}>
+                  <Text style={styles.historyBadgeText}>{history.length}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
           <Text style={styles.subtitle}>Transform your style with AI</Text>
         </View>
 
@@ -283,11 +378,49 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     marginTop: 8,
   },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    position: 'relative',
+  },
   title: {
     fontSize: 36,
     fontWeight: 'bold',
     color: '#111827',
     marginBottom: 8,
+  },
+  historyButton: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#f3f4f6',
+    minWidth: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  historyButtonText: {
+    fontSize: 24,
+  },
+  historyBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: '#6366f1',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  historyBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   subtitle: {
     fontSize: 16,
